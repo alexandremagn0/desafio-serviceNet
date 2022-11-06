@@ -10,4 +10,11 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    public function notFoundResponse()
+    {
+        return response()->json([
+            'message' => 'Nenhum resultado encontrado.'
+        ], 404);
+    }
 }
