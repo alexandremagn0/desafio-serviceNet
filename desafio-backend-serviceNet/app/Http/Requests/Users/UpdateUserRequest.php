@@ -13,7 +13,7 @@ class UpdateUserRequest extends BaseFormRequest
     {
         return [
             'name' => 'required|max:255',
-            'birth_date' => 'required|date_format:d/m/Y',
+            'birth_date' => 'required',
             'email' => "required|email|unique:users,email,{$this->id}",
         ];
     }
