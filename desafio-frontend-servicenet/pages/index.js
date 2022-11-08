@@ -1,52 +1,52 @@
 import {
-  Button,
-  FormControl,
-  FormHelperText,
-  FormLabel,
+  Box,
   Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Table,
-  TableCaption,
   TableContainer,
   Tbody,
   Td,
-  Tfoot,
   Th,
   Thead,
   Tr,
-  useDisclosure,
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import CreateModal from "../components/Modals/create";
-import styles from "../styles/Home.module.css";
+import DeleteModal from "../components/Modals/delete";
+import EditModal from "../components/Modals/edit";
 
 export default function Home() {
-  const [users, setUsers] = useState()
+  const [users, setUsers] = useState();
+  const [message, setMessage] = useState('');
+  const [filter, setFilter] = useState('');
 
-  const getUsers = () => {
-    axios.get("http://localhost/api/usuarios").then((response) => {
+  const getUsers = (filter) => {
+    axios.get("http://localhost/api/usuarios", {params: {name: filter}}).then((response) => {
       setUsers(response.data.data);
+      setMessage('')
+    }).catch((error) => {
+      setUsers([])
+      setMessage(error.response.data.message)
     });
-  }
+  };
 
   useEffect(() => {
-    getUsers()
-  
-  }, [])
-    
+    getUsers(filter);
+  }, [filter]);
+
+  const handleSearch = (event) => {
+    setFilter(event.target.value)
+  }
 
   return (
-    <div className={styles.container}>
-      
-    <CreateModal />
-    
+    <div>
+      <CreateModal refetch={getUsers} />
+
+      <Input
+        placeholder="Buscar usuário pelo nome..."
+        onChange={handleSearch}
+      />
+
       <TableContainer>
         <Table variant="simple">
           <Thead>
@@ -66,14 +66,18 @@ export default function Home() {
                 <Td>{user.email}</Td>
                 <Td>{user.birth_date}</Td>
                 <Td>
-                  <Button>Editar</Button>
-                  <Button>Excluir</Button>
+                  <Box display={"flex"} gap={"1rem"}>
+                    <EditModal refetch={getUsers} id={user?.id} />
+                    <DeleteModal refetch={getUsers} id={user?.id} />
+                  </Box>
                 </Td>
               </Tr>
             ))}
           </Tbody>
         </Table>
       </TableContainer>
+
+      <span>{message}</span>
     </div>
   );
 }
