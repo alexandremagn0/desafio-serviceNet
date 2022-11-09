@@ -14,7 +14,8 @@ class StoreUserRequest extends BaseFormRequest
         return [
             'name' => "required",
             'birth_date' => 'required',
-            'email' => "required|email|unique:users,email"
+            'email' => "required|email|unique:users,email",
+            'password' => 'required'
         ];
     }
 }
