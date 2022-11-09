@@ -6,6 +6,7 @@ use App\Http\Requests\Users\StoreUserRequest;
 use App\Http\Requests\Users\UpdateUserRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\UserResource;
 use App\Http\Resources\Api\UsersResource;
 use App\Models\Auth\User;
 
@@ -28,11 +29,18 @@ class UserController extends Controller
             $query = $query->where('name', 'LIKE', '%' . $request->name . '%');
         }
 
-        $results = $query->paginate(10);
+        $results = $query->get();
 
         return ($results->count() == 0) ?
             $this->notFoundResponse() :
             UsersResource::collection($results);
+    }
+
+    public function show(int $id)
+    {
+        $result = $this->users->find($id);
+
+        return new UserResource($result);
     }
 
     public function store(StoreUserRequest $request)
